@@ -15,6 +15,8 @@ public protocol MQTT {
 
 public extension MQTT {
     
+    var description: String { "[TOPIC] \(topic)\n[MESSAGE] \(message)" }
+    
     /// `topic`을 "/" 단위로 분리하여 배열로 반환
     func seperateTopic() -> [String] {
         topic.components(separatedBy: "/")
