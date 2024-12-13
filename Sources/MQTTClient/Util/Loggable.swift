@@ -12,7 +12,7 @@ public protocol Loggable {
     var logger: Logger { get }
 }
 
-extension Loggable {
+public extension Loggable {
     var logger: Logger {
         Logger(
             subsystem: Bundle.main.bundleIdentifier ?? "",
