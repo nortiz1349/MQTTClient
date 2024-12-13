@@ -8,9 +8,8 @@
 import CocoaMQTT
 import Combine
 import Foundation
-import OSLog
 
-final class MQTTClient: MQTTProvider {
+final class MQTTClient: MQTTProvider, Loggable {
     
     static let shared = MQTTClient()
     
@@ -20,10 +19,8 @@ final class MQTTClient: MQTTProvider {
     var mqttConnectionSubject = PassthroughSubject<Bool, Never>()
     var mqttTopicSubject = PassthroughSubject<[String], Never>()
     
-    private let keepAliveSec: Double = 60.0
-    
     private init() {
-        logger.info("\(logHeader) Init")
+        logDefault("Init")
     }
     
     func startMQTT5(with config: MQTTConfig) {
@@ -35,7 +32,6 @@ final class MQTTClient: MQTTProvider {
         mqtt5?.username = config.username
         mqtt5?.password = config.password
         mqtt5?.enableSSL = config.enableSSL
-        mqtt5?.keepAlive = UInt16(keepAliveSec)
         
         _ = mqtt5?.connect()
         
@@ -43,52 +39,53 @@ final class MQTTClient: MQTTProvider {
         publishMQTTTopicSubscription()
         publishMqttConnection()
         
-        mqtt5?.didDisconnect = { _, error in
+        mqtt5?.didDisconnect = { [weak self] _, error in
             if let error {
-                logger.error("error :: \(error)")
+                self?.logError("Disconnected with Error: \(error)")
             }
         }
     }
     
     /// MQTT 연결상태
     func publishMqttConnection() {
-        mqtt5?.didChangeState = { _, state in
+        mqtt5?.didChangeState = { [weak self] _, state in
+            guard let self else { return }
             switch state {
             case .connected:
-                logger.log("\(logHeader) CONNECTED")
-                self.mqttConnectionSubject.send(true)
+                logInfo("CONNECTED")
+                mqttConnectionSubject.send(true)
                 
             case .disconnected:
-                logger.log("\(logHeader) DISCONNECTED")
-                self.mqttConnectionSubject.send(false)
+                logInfo("DISCONNECTED")
+                mqttConnectionSubject.send(false)
                 
             case .connecting:
-                logger.log("\(logHeader) Connecting...")
+                logInfo("Connecting...")
             }
         }
     }
     
     /// MQTT 메시지
     func publishMQTTMessage() {
-        mqtt5?.didReceiveMessage = { _, rawMsg, _, _ in
-            
+        mqtt5?.didReceiveMessage = { [weak self] _, rawMsg, _, _ in
+            guard let self else { return }
             let mqtt = RawMQTT(
                 topic: rawMsg.topic,
                 message: rawMsg.string ?? ""
             )
-            logger.log("\(logHeader) [TOPIC] \(mqtt.topic)\n[MESSAGE] \(mqtt.message)")
-            
-            self.mqttMessageSubject.send(mqtt)
+            logInfo("\n[TOPIC] \(mqtt.topic)\n[MESSAGE] \(mqtt.message)")
+            mqttMessageSubject.send(mqtt)
         }
     }
     
     /// MQTT 구독 토픽
     func publishMQTTTopicSubscription() {
-        mqtt5?.didSubscribeTopics = { _, topic, _, _ in
+        mqtt5?.didSubscribeTopics = { [weak self] _, topic, _, _ in
+            guard let self else { return }
             if let dic = topic as? Dictionary<String, Int> {
                 let topicArray = dic.map { $0.key }
-                logger.log("\(logHeader) TopicSubscribed \(topicArray)")
-                self.mqttTopicSubject.send(topicArray)
+                logInfo("Topic Subscribed \(topicArray)")
+                mqttTopicSubject.send(topicArray)
             }
         }
     }
@@ -109,9 +106,6 @@ final class MQTTClient: MQTTProvider {
     func disconnectMQTT() {
         mqtt5?.disconnect()
         mqtt5 = nil
-        logger.log("\(logHeader) MQTT5 nil")
+        logInfo("Disconnected by User")
     }
 }
-
-fileprivate let logger = Logger(subsystem: "com.theone.MQTTClient", category: "MQTTClient")
-fileprivate let logHeader = "[MQTTClient]"
