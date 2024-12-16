@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 public protocol MQTTConfig {
     var host: String { get }
@@ -17,7 +16,5 @@ public protocol MQTTConfig {
 }
 
 public extension MQTTConfig {
-    var clientID: String {
-        UIDevice.current.identifierForVendor?.uuidString ?? ""
-    }
+    var clientID: String { UUID().uuidString }
 }
