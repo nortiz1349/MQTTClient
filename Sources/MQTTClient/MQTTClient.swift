@@ -58,6 +58,7 @@ final class MQTTClient: MQTTProvider, Loggable {
                 
             case .disconnected:
                 logInfo("DISCONNECTED")
+                mqttTopicSubject.send([])
                 mqttConnectionSubject.send(false)
                 
             case .connecting:
@@ -125,6 +126,7 @@ final class MQTTClient: MQTTProvider, Loggable {
     func disconnectMQTT() {
         mqtt5?.disconnect()
         mqtt5 = nil
+        mqttTopicSubject.send([])
         mqttConnectionSubject.send(false)
         logInfo("Disconnected by User")
     }
