@@ -15,6 +15,6 @@ protocol MQTTProvider {
     func subscribeMulti(_ topics: [String])
     func unsubscribe(_ topic: String)
     var mqttMessageSubject: PassthroughSubject<MQTT, Never> { get }
-    var mqttConnectionSubject: PassthroughSubject<Bool, Never> { get }
-    var mqttTopicSubject: PassthroughSubject<[String], Never> { get }
+    var mqttConnectionSubject: CurrentValueSubject<Bool, Never> { get }
+    var mqttTopicSubject: CurrentValueSubject<[String], Never> { get }
 }

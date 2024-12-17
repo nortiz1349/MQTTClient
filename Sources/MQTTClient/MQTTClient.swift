@@ -16,8 +16,8 @@ final class MQTTClient: MQTTProvider, Loggable {
     private var mqtt5: CocoaMQTT5?
     
     var mqttMessageSubject = PassthroughSubject<MQTT, Never>()
-    var mqttConnectionSubject = PassthroughSubject<Bool, Never>()
-    var mqttTopicSubject = PassthroughSubject<[String], Never>()
+    var mqttConnectionSubject = CurrentValueSubject<Bool, Never>(false)
+    var mqttTopicSubject = CurrentValueSubject<[String], Never>([])
     
     private init() {
         logDefault("Init")
@@ -37,6 +37,7 @@ final class MQTTClient: MQTTProvider, Loggable {
         
         publishMQTTMessage()
         publishMQTTTopicSubscription()
+        publishMQTTTopicUnsubscription()
         publishMqttConnection()
         
         mqtt5?.didDisconnect = { [weak self] _, error in
@@ -78,7 +79,7 @@ final class MQTTClient: MQTTProvider, Loggable {
         }
     }
     
-    /// MQTT 구독 토픽
+    /// 토픽을 구독 했을때
     func publishMQTTTopicSubscription() {
         mqtt5?.didSubscribeTopics = { [weak self] _, topic, _, _ in
             guard let self else { return }
@@ -87,6 +88,24 @@ final class MQTTClient: MQTTProvider, Loggable {
                 logInfo("Topic Subscribed \(topicArray)")
                 mqttTopicSubject.send(topicArray)
             }
+        }
+    }
+    
+    /// 토픽을 구독 해제 했을때
+    func publishMQTTTopicUnsubscription() {
+        mqtt5?.didUnsubscribeTopics = { [weak self] _, topics, _ in
+            guard let self else { return }
+            
+            var currentTopics = mqttTopicSubject.value
+            topics.forEach { topic in
+                if let index = currentTopics.firstIndex(of: topic) {
+                    currentTopics.remove(at: index)
+                }
+            }
+            
+            logInfo("Unsubscribed Topics: \(topics)")
+            logInfo("Remaining Subscribed Topics: \(currentTopics)")
+            mqttTopicSubject.send(currentTopics)
         }
     }
     
@@ -106,6 +125,7 @@ final class MQTTClient: MQTTProvider, Loggable {
     func disconnectMQTT() {
         mqtt5?.disconnect()
         mqtt5 = nil
+        mqttConnectionSubject.send(false)
         logInfo("Disconnected by User")
     }
 }
