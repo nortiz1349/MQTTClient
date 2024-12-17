@@ -86,8 +86,13 @@ final class MQTTClient: MQTTProvider, Loggable {
             guard let self else { return }
             if let dic = topic as? Dictionary<String, Int> {
                 let topicArray = dic.map { $0.key }
+                
+                var currentTopics = mqttTopicSubject.value
+                currentTopics.append(contentsOf: topicArray)
+                
                 logInfo("Topic Subscribed \(topicArray)")
-                mqttTopicSubject.send(topicArray)
+                logInfo("Remaining Subscribed Topics: \(currentTopics)")
+                mqttTopicSubject.send(currentTopics)
             }
         }
     }
@@ -109,6 +114,8 @@ final class MQTTClient: MQTTProvider, Loggable {
             mqttTopicSubject.send(currentTopics)
         }
     }
+    
+    
     
     func subscribe(_ topic: String) {
         mqtt5?.subscribe(topic, qos: .qos2)
