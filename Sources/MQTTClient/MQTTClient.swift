@@ -115,8 +115,6 @@ final class MQTTClient: MQTTProvider, Loggable {
         }
     }
     
-    
-    
     func subscribe(_ topic: String) {
         mqtt5?.subscribe(topic, qos: .qos2)
     }

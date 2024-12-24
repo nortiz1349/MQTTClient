@@ -10,35 +10,42 @@ import Foundation
 
 public struct MQTTManager {
     
+    private static var provider: MQTTProvider = MQTTClient.shared
+        
+    /// 외부에서 provider를 교체할 수 있도록 하는 메서드 (테스트 전용)
+    public static func setProvider(_ newProvider: MQTTProvider) {
+        provider = newProvider
+    }
+    
     public static func connectMQTT(with config: MQTTConfig) {
-        MQTTClient.shared.startMQTT5(with: config)
+        provider.startMQTT5(with: config)
     }
     
     public static func disconnectMQTT() {
-        MQTTClient.shared.disconnectMQTT()
+        provider.disconnectMQTT()
     }
     
     public static func subscribe(topic: String) {
-        MQTTClient.shared.subscribe(topic)
+        provider.subscribe(topic)
     }
     
     public static func subscribeMulti(topics: [String]) {
-        MQTTClient.shared.subscribeMulti(topics)
+        provider.subscribeMulti(topics)
     }
     
     public static func unsubscribe(topic: String) {
-        MQTTClient.shared.unsubscribe(topic)
+        provider.unsubscribe(topic)
     }
     
     public static var mqttMessagePublisher: AnyPublisher<MQTT, Never> {
-        MQTTClient.shared.mqttMessageSubject.eraseToAnyPublisher()
+        provider.mqttMessageSubject.eraseToAnyPublisher()
     }
     
     public static var mqttConnectionPublisher: AnyPublisher<Bool, Never> {
-        MQTTClient.shared.mqttConnectionSubject.eraseToAnyPublisher()
+        provider.mqttConnectionSubject.eraseToAnyPublisher()
     }
     
     public static var mqttTopicPublisher: AnyPublisher<[String], Never> {
-        MQTTClient.shared.mqttTopicSubject.eraseToAnyPublisher()
+        provider.mqttTopicSubject.eraseToAnyPublisher()
     }
 }
