@@ -17,5 +17,6 @@ public protocol MQTTProvider {
     func subscribe(_ topic: String)
     func subscribeMulti(_ topics: [String])
     func unsubscribe(_ topic: String)
+    func sendMessage(_ topic: String, message: String)
     func disconnectMQTT()
 }

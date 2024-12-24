@@ -128,6 +128,10 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.unsubscribe(topic)
     }
     
+    func sendMessage(_ topic: String, message: String) {
+        mqtt5?.publish(topic, withString: message, properties: MqttPublishProperties())
+    }
+    
     func disconnectMQTT() {
         mqtt5?.disconnect()
         mqtt5 = nil
