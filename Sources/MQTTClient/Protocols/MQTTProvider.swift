@@ -8,13 +8,14 @@
 import Combine
 import Foundation
 
-protocol MQTTProvider {
-    func startMQTT5(with config: MQTTConfig)
-    func disconnectMQTT()
-    func subscribe(_ topic: String)
-    func subscribeMulti(_ topics: [String])
-    func unsubscribe(_ topic: String)
+public protocol MQTTProvider {
     var mqttMessageSubject: PassthroughSubject<MQTT, Never> { get }
     var mqttConnectionSubject: CurrentValueSubject<Bool, Never> { get }
     var mqttTopicSubject: CurrentValueSubject<[String], Never> { get }
+    
+    func startMQTT5(with config: MQTTConfig)
+    func subscribe(_ topic: String)
+    func subscribeMulti(_ topics: [String])
+    func unsubscribe(_ topic: String)
+    func disconnectMQTT()
 }
