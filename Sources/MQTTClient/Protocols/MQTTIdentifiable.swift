@@ -7,12 +7,15 @@
 
 import Foundation
 
-public protocol MQTTIdentifiable: CaseIterable {
+public protocol MQTTIdentifiable: CaseIterable, RawRepresentable where RawValue == String {
     var lastComponent: String { get }
     static var unknown: Self { get }
 }
 
 public extension MQTTIdentifiable {
+    
+    var lastComponent: String { self.rawValue }
+    
     static func lastComponents() -> [String] {
         return Self.allCases.map { $0.lastComponent }
     }
