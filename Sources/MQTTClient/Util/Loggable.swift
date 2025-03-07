@@ -20,6 +20,23 @@ public extension Loggable {
         )
     }
 
+#if DevDebug || DevTestFlight
+    func logDefault(_ message: String) {
+        logger.log("[\(String(describing: Self.self), privacy: .public)] \(message, privacy: .public)")
+    }
+    
+    func logInfo(_ message: String) {
+        logger.info("[\(String(describing: Self.self), privacy: .public)] \(message, privacy: .public)")
+    }
+    
+    func logError(_ message: String) {
+        logger.error("[\(String(describing: Self.self), privacy: .public)] \(message, privacy: .public)")
+    }
+    
+    func logDebug(_ message: String) {
+        logger.debug("[\(String(describing: Self.self), privacy: .public)] \(message, privacy: .public)")
+    }
+#else
     func logDefault(_ message: String) {
         logger.log("[\(String(describing: Self.self))] \(message)")
     }
@@ -35,4 +52,6 @@ public extension Loggable {
     func logDebug(_ message: String) {
         logger.debug("[\(String(describing: Self.self))] \(message)")
     }
+#endif
+    
 }
