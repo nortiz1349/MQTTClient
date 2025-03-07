@@ -25,6 +25,10 @@ let package = Package(
             name: "MQTTClient",
             dependencies: [
                 "CocoaMQTT"
+            ],
+            swiftSettings: [
+                .define("DevDebug"),
+                .define("DevTestFlight")
             ]
         ),
         .testTarget(
