@@ -28,7 +28,9 @@ let package = Package(
             ],
             swiftSettings: [
                 .define("DevDebug"),
-                .define("DevTestFlight")
+                .define("DevTestFlight"),
+                .define("StagingDebug"),
+                .define("StagingTestFlight")
             ]
         ),
         .testTarget(
