@@ -36,6 +36,10 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.cleanSession = config.cleanSession
         mqtt5?.keepAlive = config.keepAlive
         
+        mqtt5?.didPing = { mqtt in
+            self.logInfo("didPing")
+        }
+        
         _ = mqtt5?.connect()
         
         publishMQTTMessage()
