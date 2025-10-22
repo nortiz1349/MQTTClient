@@ -14,6 +14,9 @@ public protocol MQTTConfig {
     var username: String { get }
     var password: String { get }
     var enableSSL: Bool { get }
+    var autoReconnect: Bool { get }
+    var cleanSession: Bool { get }
+    var keepAlive: UInt16 { get }
 }
 
 public extension MQTTConfig {

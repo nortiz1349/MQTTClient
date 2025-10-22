@@ -32,7 +32,9 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.username = config.username
         mqtt5?.password = config.password
         mqtt5?.enableSSL = config.enableSSL
-        mqtt5?.autoReconnect = true
+        mqtt5?.autoReconnect = config.autoReconnect
+        mqtt5?.cleanSession = config.cleanSession
+        mqtt5?.keepAlive = config.keepAlive
         
         _ = mqtt5?.connect()
         
