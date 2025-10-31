@@ -53,10 +53,6 @@ public struct MQTTManager {
         provider.mqttConnectionSubject.eraseToAnyPublisher()
     }
     
-    public static var mqttConnectionStatePublisher: AnyPublisher<MQTTConnectionState, Never> {
-        provider.mqttConnectionStateSubject.eraseToAnyPublisher()
-    }
-    
     public static var mqttTopicPublisher: AnyPublisher<[String], Never> {
         provider.mqttTopicSubject.eraseToAnyPublisher()
     }
