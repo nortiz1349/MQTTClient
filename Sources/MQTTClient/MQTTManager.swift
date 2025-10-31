@@ -41,6 +41,10 @@ public struct MQTTManager {
         provider.sendMessage(topic, message: message)
     }
     
+    public static func ping() {
+        provider.ping()
+    }
+    
     public static var mqttMessagePublisher: AnyPublisher<MQTT, Never> {
         provider.mqttMessageSubject.eraseToAnyPublisher()
     }
@@ -49,7 +53,19 @@ public struct MQTTManager {
         provider.mqttConnectionSubject.eraseToAnyPublisher()
     }
     
+    public static var mqttConnectionStatePublisher: AnyPublisher<MQTTConnectionState, Never> {
+        provider.mqttConnectionStateSubject.eraseToAnyPublisher()
+    }
+    
     public static var mqttTopicPublisher: AnyPublisher<[String], Never> {
         provider.mqttTopicSubject.eraseToAnyPublisher()
+    }
+    
+    public static var mqttPingPublisher: AnyPublisher<Void, Never> {
+        provider.mqttPingSubject.eraseToAnyPublisher()
+    }
+    
+    public static var mqttPongPublisher: AnyPublisher<Void, Never> {
+        provider.mqttPongSubject.eraseToAnyPublisher()
     }
 }

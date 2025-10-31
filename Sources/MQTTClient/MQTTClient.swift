@@ -17,7 +17,10 @@ final class MQTTClient: MQTTProvider, Loggable {
     
     var mqttMessageSubject = PassthroughSubject<MQTT, Never>()
     var mqttConnectionSubject = CurrentValueSubject<Bool, Never>(false)
+    var mqttConnectionStateSubject = CurrentValueSubject<MQTTConnectionState, Never>(.disconnected)
     var mqttTopicSubject = CurrentValueSubject<[String], Never>([])
+    var mqttPingSubject = PassthroughSubject<Void, Never>()
+    var mqttPongSubject = PassthroughSubject<Void, Never>()
     
     private init() {
         logDefault("Init")
@@ -32,16 +35,18 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.username = config.username
         mqtt5?.password = config.password
         mqtt5?.enableSSL = config.enableSSL
-        mqtt5?.autoReconnect = config.autoReconnect
+        mqtt5?.autoReconnect = false
         mqtt5?.cleanSession = config.cleanSession
         mqtt5?.keepAlive = config.keepAlive
         
-        mqtt5?.didPing = { _ in
-            self.logInfo("didPing")
+        mqtt5?.didPing = { [weak self] _ in
+            self?.logInfo("Ping sent")
+            self?.mqttPingSubject.send()
         }
         
-        mqtt5?.didReceivePong = { _ in
-            self.logInfo("didReceivePong")
+        mqtt5?.didReceivePong = { [weak self] _ in
+            self?.logInfo("Pong received")
+            self?.mqttPongSubject.send()
         }
         
         _ = mqtt5?.connect()
@@ -66,14 +71,17 @@ final class MQTTClient: MQTTProvider, Loggable {
             case .connected:
                 logInfo("CONNECTED")
                 mqttConnectionSubject.send(true)
+                mqttConnectionStateSubject.send(.connected)
                 
             case .disconnected:
                 logInfo("DISCONNECTED")
                 mqttTopicSubject.send([])
                 mqttConnectionSubject.send(false)
+                mqttConnectionStateSubject.send(.disconnected)
                 
             case .connecting:
                 logInfo("Connecting...")
+                mqttConnectionStateSubject.send(.connecting)
             }
         }
     }
@@ -148,6 +156,11 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5 = nil
         mqttTopicSubject.send([])
         mqttConnectionSubject.send(false)
+        mqttConnectionStateSubject.send(.disconnected)
         logInfo("Disconnected by User")
+    }
+    
+    func ping() {
+        mqtt5?.ping()
     }
 }
