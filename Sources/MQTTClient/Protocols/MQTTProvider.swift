@@ -11,6 +11,7 @@ import Foundation
 public protocol MQTTProvider {
     var mqttMessageSubject: PassthroughSubject<MQTT, Never> { get }
     var mqttConnectionSubject: CurrentValueSubject<Bool, Never> { get }
+    var mqttConnectionStateSubject: CurrentValueSubject<MQTTConnectionState, Never> { get }
     var mqttTopicSubject: CurrentValueSubject<[String], Never> { get }
     var mqttPingSubject: PassthroughSubject<Void, Never> { get }
     var mqttPongSubject: PassthroughSubject<Void, Never> { get }

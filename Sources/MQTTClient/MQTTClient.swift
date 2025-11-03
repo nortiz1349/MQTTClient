@@ -17,6 +17,7 @@ final class MQTTClient: MQTTProvider, Loggable {
     
     var mqttMessageSubject = PassthroughSubject<MQTT, Never>()
     var mqttConnectionSubject = CurrentValueSubject<Bool, Never>(false)
+    var mqttConnectionStateSubject = CurrentValueSubject<MQTTConnectionState, Never>(.disconnected)
     var mqttTopicSubject = CurrentValueSubject<[String], Never>([])
     var mqttPingSubject = PassthroughSubject<Void, Never>()
     var mqttPongSubject = PassthroughSubject<Void, Never>()
@@ -72,14 +73,17 @@ final class MQTTClient: MQTTProvider, Loggable {
             case .connected:
                 logInfo("CONNECTED")
                 mqttConnectionSubject.send(true)
+                mqttConnectionStateSubject.send(.connected)
                 
             case .disconnected:
                 logInfo("DISCONNECTED")
                 mqttTopicSubject.send([])
                 mqttConnectionSubject.send(false)
+                mqttConnectionStateSubject.send(.disconnected)
                 
             case .connecting:
                 logInfo("Connecting...")
+                mqttConnectionStateSubject.send(.connecting)
             }
         }
     }
@@ -154,6 +158,7 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5 = nil
         mqttTopicSubject.send([])
         mqttConnectionSubject.send(false)
+        mqttConnectionStateSubject.send(.disconnected)
         logInfo("Disconnected by User")
     }
     
