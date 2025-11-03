@@ -41,12 +41,12 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.keepAlive = config.keepAlive
         
         mqtt5?.didPing = { [weak self] _ in
-            self?.logInfo("Ping sent")
+            //self?.logInfo("Ping sent")
             self?.mqttPingSubject.send()
         }
         
         mqtt5?.didReceivePong = { [weak self] _ in
-            self?.logInfo("Pong received")
+            //self?.logInfo("Pong received")
             self?.mqttPongSubject.send()
         }
         
