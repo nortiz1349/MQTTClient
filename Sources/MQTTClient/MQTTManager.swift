@@ -64,4 +64,8 @@ public struct MQTTManager {
     public static var mqttPongPublisher: AnyPublisher<Void, Never> {
         provider.mqttPongSubject.eraseToAnyPublisher()
     }
+
+    public static var mqttDisconnectPublisher: AnyPublisher<Error?, Never> {
+        provider.mqttDisconnectSubject.eraseToAnyPublisher()
+    }
 }

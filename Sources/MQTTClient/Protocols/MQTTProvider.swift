@@ -14,6 +14,7 @@ public protocol MQTTProvider {
     var mqttTopicSubject: CurrentValueSubject<[String], Never> { get }
     var mqttPingSubject: PassthroughSubject<Void, Never> { get }
     var mqttPongSubject: PassthroughSubject<Void, Never> { get }
+    var mqttDisconnectSubject: PassthroughSubject<Error?, Never> { get }
     
     func startMQTT5(with config: MQTTConfig)
     func subscribe(_ topic: String)

@@ -20,6 +20,7 @@ final class MQTTClient: MQTTProvider, Loggable {
     var mqttTopicSubject = CurrentValueSubject<[String], Never>([])
     var mqttPingSubject = PassthroughSubject<Void, Never>()
     var mqttPongSubject = PassthroughSubject<Void, Never>()
+    var mqttDisconnectSubject = PassthroughSubject<Error?, Never>()
     
     private init() {
         logDefault("Init")
@@ -34,7 +35,7 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.username = config.username
         mqtt5?.password = config.password
         mqtt5?.enableSSL = config.enableSSL
-        mqtt5?.autoReconnect = false
+        mqtt5?.autoReconnect = true
         mqtt5?.cleanSession = config.cleanSession
         mqtt5?.keepAlive = config.keepAlive
         
@@ -57,6 +58,7 @@ final class MQTTClient: MQTTProvider, Loggable {
         
         mqtt5?.didDisconnect = { [weak self] _, error in
             if let error {
+                self?.mqttDisconnectSubject.send(error)
                 self?.logError("Disconnected with Error: \(error)")
             }
         }
