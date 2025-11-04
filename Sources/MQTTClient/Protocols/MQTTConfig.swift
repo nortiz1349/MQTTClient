@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 public protocol MQTTConfig {
+    var clientID: String { get }
     var host: String { get }
     var port: UInt16 { get }
     var username: String { get }
@@ -19,6 +20,6 @@ public protocol MQTTConfig {
     var keepAlive: UInt16 { get }
 }
 
-public extension MQTTConfig {
-    var clientID: String { UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString }
-}
+//public extension MQTTConfig {
+//    var clientID: String { UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString }
+//}
