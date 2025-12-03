@@ -24,7 +24,7 @@ final class MQTTClient: MQTTProvider, Loggable {
     var mqttDisconnectSubject = PassthroughSubject<Error?, Never>()
     
     private init() {
-        logDefault("Init")
+        logNotice("Init")
     }
     
     func startMQTT5(with config: MQTTConfig) {
@@ -71,18 +71,18 @@ final class MQTTClient: MQTTProvider, Loggable {
             guard let self else { return }
             switch state {
             case .connected:
-                logInfo("CONNECTED")
+                logNotice("CONNECTED")
                 mqttConnectionSubject.send(true)
                 mqttConnectionStateSubject.send(.connected)
                 
             case .disconnected:
-                logInfo("DISCONNECTED")
+                logNotice("DISCONNECTED")
                 mqttTopicSubject.send([])
                 mqttConnectionSubject.send(false)
                 mqttConnectionStateSubject.send(.disconnected)
                 
             case .connecting:
-                logInfo("Connecting...")
+                logNotice("Connecting...")
                 mqttConnectionStateSubject.send(.connecting)
             }
         }
@@ -96,7 +96,7 @@ final class MQTTClient: MQTTProvider, Loggable {
                 topic: rawMsg.topic,
                 message: rawMsg.string ?? ""
             )
-            logInfo("\n[TOPIC] \(mqtt.topic)\n[MESSAGE] \(mqtt.message)")
+            logNotice("\n[TOPIC] \(mqtt.topic)\n[MESSAGE] \(mqtt.message)")
             mqttMessageSubject.send(mqtt)
         }
     }
@@ -111,8 +111,8 @@ final class MQTTClient: MQTTProvider, Loggable {
                 var currentTopics = mqttTopicSubject.value
                 currentTopics.append(contentsOf: topicArray)
                 
-                logInfo("Topic Subscribed \(topicArray)")
-                logInfo("Remaining Subscribed Topics: \(currentTopics)")
+                logNotice("Topic Subscribed \(topicArray)")
+                logNotice("Remaining Subscribed Topics: \(currentTopics)")
                 mqttTopicSubject.send(currentTopics)
             }
         }
@@ -130,8 +130,8 @@ final class MQTTClient: MQTTProvider, Loggable {
                 }
             }
             
-            logInfo("Unsubscribed Topics: \(topics)")
-            logInfo("Remaining Subscribed Topics: \(currentTopics)")
+            logNotice("Unsubscribed Topics: \(topics)")
+            logNotice("Remaining Subscribed Topics: \(currentTopics)")
             mqttTopicSubject.send(currentTopics)
         }
     }
@@ -159,7 +159,7 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqttTopicSubject.send([])
         mqttConnectionSubject.send(false)
         mqttConnectionStateSubject.send(.disconnected)
-        logInfo("Disconnected by User")
+        logNotice("Disconnected by User")
     }
     
     func ping() {

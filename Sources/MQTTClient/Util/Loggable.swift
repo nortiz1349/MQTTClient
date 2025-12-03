@@ -21,7 +21,7 @@ public extension Loggable {
     }
 
 #if DevDebug || DevTestFlight || StagingDebug || StagingTestFlight
-    func logDefault(_ message: String) {
+    func logNotice(_ message: String) {
         logger.log("[\(String(describing: Self.self), privacy: .public)] \(message, privacy: .public)")
     }
     
