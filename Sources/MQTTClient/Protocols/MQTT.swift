@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import OSLog
 
-public protocol MQTT: Loggable {
+public protocol MQTT {
     var topic: String { get }
     var message: String { get }
 }
@@ -24,7 +25,10 @@ public extension MQTT {
     /// `message`를 utf8 형식으로 인코딩한 `Data`
     var jsonDataMessage: Data? {
         guard let data = message.data(using: .utf8) else {
-            logError("Failed to encode data From message\n\(message)")
+            Logger(
+                subsystem: Bundle.main.bundleIdentifier ?? "",
+                category: "MQTT"
+            ).error("Failed to encode data From message\n\(message)")
             return nil
         }
         

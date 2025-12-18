@@ -8,11 +8,11 @@
 import Foundation
 import OSLog
 
-public protocol Loggable {
+protocol Loggable {
     var logger: Logger { get }
 }
 
-public extension Loggable {
+extension Loggable {
     var logger: Logger {
         Logger(
             subsystem: Bundle.main.bundleIdentifier ?? "",
