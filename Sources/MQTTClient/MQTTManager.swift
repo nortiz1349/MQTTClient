@@ -37,6 +37,10 @@ public struct MQTTManager {
         provider.unsubscribe(topic)
     }
     
+    public static func unsubscribeMulti(topics: [String]) {
+        provider.unsubscribeMulti(topics)
+    }
+    
     public static func sendMessage(topic: String, message: String) {
         provider.sendMessage(topic, message: message)
     }

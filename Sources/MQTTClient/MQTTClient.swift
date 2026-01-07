@@ -149,6 +149,11 @@ final class MQTTClient: MQTTProvider, Loggable {
         mqtt5?.unsubscribe(topic)
     }
     
+    func unsubscribeMulti(_ topics: [String]) {
+        let subscription = topics.map { MqttSubscription(topic: $0, qos: .qos2) }
+        mqtt5?.unsubscribe(subscription)
+    }
+    
     func sendMessage(_ topic: String, message: String) {
         mqtt5?.publish(topic, withString: message, properties: MqttPublishProperties())
     }
